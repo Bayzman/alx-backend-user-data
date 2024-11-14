@@ -11,7 +11,8 @@ class BasicAuth(Auth):
         """ Constructor of the class """
         super().__init__()
 
-    def extract_base64_authorization_header(self, authorization_header: str) -> str:
+    def extract_base64_authorization_header(self,
+                                            authorization_header: str) -> str:
         """ Base64 authorization header """
         if authorization_header is None:
             return None
