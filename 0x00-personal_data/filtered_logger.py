@@ -5,6 +5,10 @@
 import re
 from typing import List
 import logging
+import mysql.connector
+import os
+
+PII_FIELDS = ("email", "password", "name", "ssn", "phone")
 
 
 def filter_datum(fields: List[str], redaction: str,
@@ -44,4 +48,13 @@ def get_logger() -> logging.Logger:
     return logger
 
 
-PII_FIELDS = ("email", "password", "name", "ssn", "phone")
+def get_db() -> str:
+    """ Returns a database connection string """
+    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    user = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    passwd = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    db = os.getenv("PERSONAL_DATA_DB_NAME", "")
+    connector = mysql.connector.connect(host=host, user=user,
+                                        passwd=passwd, db=db)
+    
+    return connector
