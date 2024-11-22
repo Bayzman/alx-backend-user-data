@@ -10,8 +10,6 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
 from user import User, Base
 
-Base = declarative_base()
-
 
 class DB:
     """ DB class """
