@@ -3,7 +3,7 @@
 """ Basic Flask app """
 
 from flask import Flask, render_template
-from flask import jsonify, request
+from flask import jsonify, request, abort
 from auth import Auth
 
 app = Flask(__name__)
@@ -26,6 +26,22 @@ def register_user() -> str:
         return jsonify({"email": user.email, "message": "user created"}), 200
     except ValueError:
         return jsonify({"message": "email already exists"}), 400
+
+
+@app.route('/sessions', methods=['POST'], strict_slashes=False)
+def login() -> str:
+    """ Login """
+    try:
+        email = request.form.get('email')
+        password = request.form.get('password')
+        if AUTH.valid_login(email, password):
+            session_id = AUTH.create_session(email)
+            return jsonify({"email": email, "message": "logged in",
+                            "session_id": session_id}), 200
+        else:
+            abort(401, description="Invalid login")
+    except Exception:
+        abort(401, description="Invalid login")
 
 
 if __name__ == "__main__":
