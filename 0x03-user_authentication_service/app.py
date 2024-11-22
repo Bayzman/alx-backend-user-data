@@ -3,7 +3,7 @@
 """ Basic Flask app """
 
 from flask import Flask, render_template
-from flask import jsonify
+from flask import jsonify, request
 from auth import Auth
 
 app = Flask(__name__)
