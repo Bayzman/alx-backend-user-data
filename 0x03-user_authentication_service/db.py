@@ -12,6 +12,7 @@ from user import User, Base
 
 Base = declarative_base()
 
+
 class DB:
     """ DB class """
 
