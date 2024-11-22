@@ -72,3 +72,23 @@ class Auth:
         except Exception:
             pass
         return None
+
+    def get_reset_password_token(self, email: str) -> str:
+        """ Get reset password token """
+        try:
+            user = self._db.find_user_by(email=email)
+            session_id = _generate_uuid()
+            self._db.update_user(user.id, reset_token=session_id)
+            return session_id
+        except Exception:
+            return ValueError
+
+    def update_password(self, reset_token: str, new_password: str) -> None:
+        """ Update password """
+        try:
+            user = self._db.find_user_by(reset_token=reset_token)
+            self._db.update_user(user.id,
+                                 hashed_password=_hash_password(new_password),
+                                 reset_token=None)
+        except Exception:
+            raise ValueError

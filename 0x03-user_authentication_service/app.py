@@ -60,5 +60,51 @@ def logout() -> str:
     abort(403, description="Session not valid")
 
 
+@app.route('/profile', methods=['GET'], strict_slashes=False)
+def profile() -> str:
+    """ Profile """
+    session_id = request.cookies.get('session_id')
+
+    if session_id is None:
+        abort(403, description="No session cookie found")
+
+    user = AUTH.get_user_from_session_id(session_id)
+
+    if user:
+        return jsonify({"email": user.email}), 200
+    abort(403, description="Invalid session")
+
+
+@app.route('/reset_password', methods=['POST'], strict_slashes=False)
+def get_reset_password_token() -> str:
+    """ Get reset password token """
+    email = request.form.get('email')
+    if email is None:
+        abort(400, description="Email is required")
+
+    try:
+        reset_token = AUTH.get_reset_password_token(email)
+        return jsonify({"email": email, "reset_token": reset_token}), 200
+    except Exception:
+        abort(403, description="Unable to get reset token")
+
+
+@app.route('/reset_password', methods=['PUT'], strict_slashes=False)
+def update_password() -> str:
+    """ Update password """
+    email = request.form.get('email')
+    token = request.form.get('reset_token')
+    new_password = request.form.get('new_password')
+
+    if email is None or token is None or new_password is None:
+        abort(400, description="Email, token, and new_password are required")
+
+    try:
+        AUTH.update_password(reset_token, new_password)
+        return jsonify({"email": email, "message": "Password updated"}), 200
+    except Exception:
+        abort(403, description="Invalid reset token")
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port="5000")
